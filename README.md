@@ -5,4 +5,4 @@ So if you want to run this webise user download file and run the python file fir
 Then user can open the original.html file and input dataset and tapy button to get Q1,IQR, Q3, mean, standard devisition and outlier.
 You can also type other data and type button to get new Q1, Q3, mean, standard devisition and outlier.
 Here is am example of website
-<img width="1512" alt="截屏2024-08-03 下午3 19 38" src="https://github.com/user-attachments/assets/e0bded3b-0c48-4e7c-8c28-ce73557b75e1">
+<img width="720" alt="show" src="https://github.com/user-attachments/assets/e5dfb454-d9be-478e-950e-7a5517d7d0b1">
