@@ -1,115 +1,146 @@
-import http.server
-import socketserver
-import json
-import numpy as np
-import urllib.parse
 
-class RequestHandler(http.server.BaseHTTPRequestHandler):
-    # 处理 OPTIONS 请求
-    def do_OPTIONS(self):
-        self.send_response(200)  # 响应状态码 200 成功
-        self.send_header('Access-Control-Allow-Origin', '*')  # 设置允许跨域访问的源
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')  # 允许的 HTTP 方法
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')  # 允许的请求头
-        self.end_headers()  # 结束响应头的设置
 
-    def Q1_Q3_IQR_outliers_mean_and_standard_devisition(self,dataset):
-        #预处理
-        sorted_dataset = sorted(dataset)
-        #转换数组为numpy数组
-        dataset = np.array(dataset)
+document.querySelectorAll('#home_page_input_dataset_box').forEach(textarea => {
+    // 监听输入的东西
+    textarea.addEventListener('input', () => {
+        // 只允许输入数字、逗号、小数点
+        textarea.value = textarea.value.replace(/[^0-9,.]/g, '');
+    });
+});
 
-        mean = np.mean(dataset)
-        standerd_devisition = np.std(dataset)
-        q1 = np.percentile(dataset,25)
-        q3 = np.percentile(dataset,75)
-        iqr= q3-q1
+document.querySelectorAll('#input_percent_of_dataset').forEach(textarea => {
+    // 监听输入事件
+    textarea.addEventListener('input', (event) => {
+        let content = textarea.value;
 
-        lower_bound = q1 - 1.5 * iqr
-        upper_bound = q3 + 1.5 * iqr
-        outliers = dataset[(dataset<lower_bound) | (dataset > upper_bound)]
+        // 移除除数字、小数点和百分号以外的字符
+        content = content.replace(/[^0-9.%]/g, '');
 
-        return {
-        'sorted_data': sorted_dataset,  # 返回排序后的数据
-        'mean': mean,
-        'standard_deviation': standerd_devisition,
-        'q1': q1,
-        'q3': q3,
-        'iqr': iqr,
-        'outliers': outliers.tolist()
+        // 如果已经有百分号，移除所有额外的百分号
+        let percentIndex = content.indexOf("%");
+        if (percentIndex !== -1) {
+            // 如果百分号不在最后，移动它到最后
+            content = content.replace(/%/g, ''); // 移除所有百分号
+            content += "%"; // 在末尾添加百分号
         }
-    
-    
-    def do_POST(self):
-        # 解析请求路径和查询参数
-        parsed_path = urllib.parse.urlparse(self.path)
-        path = parsed_path.path
-        query_params = urllib.parse.parse_qs(parsed_path.query)
+        
 
-        # 获取请求体的长度
-        content_length = int(self.headers['Content-Length'])
-        # 读取请求体数据并解码为字符串
-        post_data = self.rfile.read(content_length).decode('utf-8')
+        if (content.endsWith('%')){
+            let number = parseFloat(content.substring(0, content.length-1)); // 去掉百分号并转换为数字
+            if (number>100 || number<0){
+                document.getElementById("too_larger_or_less_percent_hint").style.visibility = "visible"; //显示提醒
+                content = content.substring(0, content.length-2) + "%"; // 恢复为有效的值
+            }
+        }else {
+            let number = + content;
+            if (number>1 || number<0){
+                content += "%";
+            }
+        }
+        textarea.value = content; // 更新输入框的值
+    });
 
-        # 需要将javascript传输的JSON 格式的数据解析为 Python 字典
-        try:
-            #通过json下载文件
-            js_file=json.loads(post_data)
-            #获取dataset
-            data_file = js_file['data']
-            # 将数据按逗号分隔，然后将每个项转换为浮点数
-            data_list=list(map(float,data_file.split(',')))
-            
-            #根据路径选择不同处理方法
-            match path:
-                case '/Q1_Q3_IQR_outliers_mean_and_standard_devisition':
-                    response= self.Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
+    textarea.addEventListener('keydown', (event) => {
+        let content = textarea.value;
+        let cursorPosition = textarea.selectionStart; // 获取光标位置
 
-                case '/Q1_Q3_IQR_outliers_mean_standard_devisition_and_percent':
-                    response= self.Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
-                    requir_percent = js_file['percent']
-                    try:
-                        if requir_percent.endswith('%'):
-                            requir_num = float(requir_percent[:-1])
-                        else:
-                            requir_num = float(requir_percent) * 100
+        // 检测是否按下了 Backspace 键
+        if (event.key === "Backspace" ) {
+            if (content.length==2){
+                textarea.value = null;
+            }else if ( content.endsWith("%")){
+                if (cursorPosition === content.length){
+                    event.preventDefault(); // 阻止默认删除操作
+                    // 显示提醒
+                    document.getElementById("too_larger_or_less_percent_hint").style.visibility = "visible";
+                }
+            }
+        }
+    });
+});
 
-                        percent = np.percentile(data_list,requir_num)
-                        response['percent'] = percent
+function add_row_when_input_more_than_row(element) {
+    element.forEach(textarea => {
+        textarea.addEventListener('input', function(){
+            this.style.height = 'auto'; // 重置高度
+            this.style.height = `${this.scrollHeight}px`; // 根据内容设置高度
+        });
+    });
+}
+
+// 等待 DOM 加载完成
+document.addEventListener('DOMContentLoaded', () => {
+
+    //选中textarea, 让输入文本增加过多时时行数增加
+    const input_long_text = document.querySelectorAll('.input_long_text');
+    add_row_when_input_more_than_row(input_long_text);
 
 
-                    except ValueError:
-                        response['percent'] = 'Value invalid.'
+    // 获取提交dataset按钮并添加点击事件监听器
+    document.querySelector('#Q1_Q3_IQR_outliers_mean_and_standard_devisition_submit_button').addEventListener('click', () => {
+        // 获取输入框的值
+        const textarea = document.querySelector('#home_page_input_dataset_box');
+        const data = textarea.value.trim(); // 去除输入数据的首尾空白字符
+        const percent = document.querySelector('#input_percent_of_dataset').value.trim(); //获取需要的百分值
 
 
-            
-            # 发送成功响应
-            # 响应状态码 200 成功
-            self.send_response(200)  
-            # 设置响应的内容类型为 JSON
-            self.send_header('Content-type', 'application/json') 
-            # 设置 CORS 头，允许跨域访问
-            self.send_header('Access-Control-Allow-Origin', '*')  
-            # 结束响应头的设置
-            self.end_headers() 
-            #回复写入json文件并发送 JSON 格式的响应体
-            self.wfile.write(json.dumps(response).encode('utf-8'))  
-        except Exception as e:
-            # 处理异常
-            print(f"Error handling request: {e}")
-            self.send_response(400)  # 响应状态码 400 错误请求
-            self.send_header('Content-type', 'application/json')  # 设置响应的内容类型为 JSON
-            self.send_header('Access-Control-Allow-Origin', '*')  # 设置 CORS 头，允许跨域访问
-            self.end_headers()  # 结束响应头的设置
-            self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))  # 发送错误信息
-    
+        // 检查输入数据是否为空
+        if (data === "") {
+            alert("Please input some data."); // 提示用户输入数据
+            return; // 终止函数执行
+        }
 
-# 设置服务器端口
-PORT = 8000
-# 指定请求处理程序
-Handler = RequestHandler
+        let path;
+        let extral_percent=false;
+        let body_file;
+        if (percent===""){
+            path = 'Q1_Q3_IQR_outliers_mean_and_standard_devisition';
+            body_file={data:data};
+        }else {
+            extral_percent=true;
+            path = 'Q1_Q3_IQR_outliers_mean_standard_devisition_and_percent';
+            body_file={ 
+                data:data,
+                percent:percent
+            };
+        }
 
-# 创建并启动服务器
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"Serving at port {PORT}")
-    httpd.serve_forever()  # 开始服务器循环，保持服务器运行
+        
+        // 向服务器发送请求
+        fetch(`http://localhost:8000/${path}`, {
+            method: 'POST', // 使用 POST 方法
+            headers: {
+                'Content-Type': 'application/json', // 指定内容类型为 JSON
+            },
+            body: JSON.stringify(body_file), // 将数据作为 JSON 发送
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Something went error'); // 检查响应是否成功
+            }
+            return response.json(); // 解析响应为 JSON
+        })
+        .then(result => {
+            // 显示计算结果
+            const resultsDiv = document.querySelector('#result_for_homepage_input');
+            resultsDiv.innerHTML = `
+                <p class="result_of_data_input">Mean: ${result.sorted_data.map(num => num).join(', ')}</p>
+                <p class="result_of_data_input">Mean: ${result.mean}</p>
+                <p class="result_of_data_input">Q1: ${result.q1}</p>
+                <p class="result_of_data_input">Q3: ${result.q3}</p>
+                <p class="result_of_data_input">IQR: ${result.iqr}</p>
+                <p class="result_of_data_input">Standard Deviation: ${result.standard_deviation}</p>
+                <p class="result_of_data_input">Outliers: ${result.outliers.join(', ')}</p>
+                ${extral_percent ? `<p class="result_of_data_input">Outliers: ${result.percent}</p>` : ''}
+            `;
+
+        })
+        .catch(error => {
+            console.error('Error:', error); // 记录错误信息
+            alert('An error occurred while processing your request.'); // 提示用户错误信息
+        });
+    });
+
+});
+
+
