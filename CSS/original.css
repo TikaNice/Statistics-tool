@@ -71,40 +71,47 @@
     font-size: 2em;
 }
 
-.input_dataset {
+.input_long_text {
     width: 100%;
-            min-height: 0.5em; /* 初始高度 */
-            max-height: 200em; /* 最大高度 */
-            overflow: hidden;
-            padding: 1em;
-            box-sizing: border-box;
-            font-size: 1.7em;
-            resize: none; /* 禁止用户手动拖动调整 */
+    min-height: 2em;
+    overflow: hidden;
+    padding: 0.2em;
+    box-sizing: border-box;
+    font-size: 1.8em;
+    resize: none; /* 禁止用户手动拖动调整 */
 }
 
-#submit_button{
-    font-size: 2em;
-    align-items: center;
+.percent_line {
+    display: flex;
+}
+
+.input_short_text{
+    flex: 0.5x;
+    font-size: 1.6em;
+    width: 10%;
+    padding-bottom: 0%;
+    text-align: center;
+}
+
+.hint{
+    padding: 0;
+    border: 0;
+    padding-left: 1em;
+    line-height: 0.5em;
+    font-size: 1.5em ;
+    visibility: hidden;
+}
+
+
+.submit_button{
+    font-size: 1.8em;
     display: block;
     margin: 0 auto;
+    margin-bottom: 0.5em;
     margin-top: 0.8em;
 }
 
 .result_of_data_input{
     font-size: 2em;
-    font-weight: 500;
-    color: black;
+    margin: 0.2em;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
