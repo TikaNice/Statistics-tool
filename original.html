@@ -12,11 +12,15 @@
 </head>
 <body >
     <h1 class="page_tittle">Statistics Tool</h1>
-    <p class="general_sentence">You can input list of data to get Q1, Q3, IQR, outliers, mean and standard of the data you input.</p>
-    <textarea class="input_dataset" id="home_page_input_box" placeholder="Please input your data(only allow numbere, comma and point)"></textarea>
-    <button id="submit_button">Submit</button>
+    <p class="general_sentence">Input dataset to get Q1, Q3, IQR, outliers, mean and standard devisition of the dataset.</p>
+    <textarea class="input_long_text" rows="1" id="home_page_input_dataset_box" placeholder="Please input your data(only allow numbere, comma and point)"></textarea>
+    <p class="general_sentence">Do you also want percent of dataset?</p>
+    <div class="percent_line">
+        <textarea class="input_short_text" rows='1' id="input_percent_of_dataset"></textarea>
+        <p class="hint" id="too_larger_or_less_percent_hint">The percent should between 0 and 100%. Otherwise it makes no sense.</p>
+    </div>
+    <button id="Q1_Q3_IQR_outliers_mean_and_standard_devisition_submit_button" class="submit_button">Submit</button>
     <div id="result_for_homepage_input">
-
     </div>
 </body>
 </html>
