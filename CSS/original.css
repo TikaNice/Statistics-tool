@@ -33,12 +33,15 @@
         font-size:16px;
     }
 }
+body{
+    font-family: "Inter";
+    height: 100%; /* 确保页面整体高度正确 */
+}
 
 /*字体阴影抖动效果*/
 .page_tittle{
-    color: white;
+    color: black;
     height: 3em;
-    background-image: url('tittle-background2.jpeg');
     font-size:6em;
     display: flex; 
     background-repeat: repeat;
@@ -115,3 +118,8 @@
     font-size: 2em;
     margin: 0.2em;
 }
+
+
+
+
+
