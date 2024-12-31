@@ -20,7 +20,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         dataset = np.array(dataset)
 
         mean = np.mean(dataset)
-        standerd_devisition = np.std(dataset)
+        standard_deviation = np.std(dataset)
         q1 = np.percentile(dataset,25)
         q3 = np.percentile(dataset,75)
         iqr= q3-q1
@@ -29,17 +29,43 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
         upper_bound = q3 + 1.5 * iqr
         outliers = dataset[(dataset<lower_bound) | (dataset > upper_bound)]
 
+        if len(outliers) == 0:
+            return {
+                'sorted_data': sorted_dataset,  # 返回排序后的数据
+                'mean': mean,
+                'standard_deviation': standard_deviation,
+                'q1': q1,
+                'q3': q3,
+                'iqr': iqr,
+            }
+
+        # 如果有异常值：去除数据集的异常值
+        dataset_without_outliers = dataset[(dataset >= lower_bound) & (dataset <= upper_bound)]
+
+        # 重新计算统计值
+        new_mean = np.mean(dataset_without_outliers)
+        new_standard_deviation = np.std(dataset_without_outliers)
+        new_q1 = np.percentile(dataset_without_outliers, 25)
+        new_q3 = np.percentile(dataset_without_outliers, 75)
+        new_iqr = new_q3 - new_q1
+        
         return {
-        'sorted_data': sorted_dataset,  # 返回排序后的数据
-        'mean': mean,
-        'standard_deviation': standerd_devisition,
-        'q1': q1,
-        'q3': q3,
-        'iqr': iqr,
-        'outliers': outliers.tolist()
+            'sorted_data': sorted_dataset,
+            'mean': mean,
+            'standard_deviation': standard_deviation,
+            'q1': q1,
+            'q3': q3,
+            'iqr': iqr,
+            'outliers': outliers.tolist(),
+            'dataset_without_outliers': dataset_without_outliers.tolist(),
+            'new_mean': new_mean,
+            'new_standard_deviation': new_standard_deviation,
+            'new_q1': new_q1,
+            'new_q3': new_q3,
+            'new_iqr': new_iqr
         }
-    
-    
+
+        
     def do_POST(self):
         # 解析请求路径和查询参数
         parsed_path = urllib.parse.urlparse(self.path)
@@ -69,18 +95,25 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
                     response= self.Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
                     requir_percent = js_file['percent']
                     try:
+                        # 检查是否为百分比形式
                         if requir_percent.endswith('%'):
-                            requir_num = float(requir_percent[:-1])
+                            requir_num = float(requir_percent[:-1])  # 去掉百分号并转为浮点数
                         else:
-                            requir_num = float(requir_percent) * 100
+                            requir_num = float(requir_percent) * 100  # 按比例值转换为百分比
 
-                        percent = np.percentile(data_list,requir_num)
-                        response['percent'] = percent
-
-
+                        # 校验范围是否合法
+                        if not (0 <= requir_num <= 100):
+                            response['percent'] = 'Value out of range (0-100).'
+                        else:
+                            # 计算百分位数
+                            percent = np.percentile(data_list, requir_num)
+                            response['percent'] = percent
                     except ValueError:
-                        response['percent'] = 'Value invalid.'
+                        response['percent'] = 'Invalid value for percent.'
 
+                case _:
+                    print(f"Invalid endpoint: {path}")
+                    response = {'error': 'Invalid endpoint'}
 
             
             # 发送成功响应
