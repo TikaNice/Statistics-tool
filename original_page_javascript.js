@@ -114,27 +114,49 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(body_file), // 将数据作为 JSON 发送
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Something went error'); // 检查响应是否成功
-            }
-            return response.json(); // 解析响应为 JSON
-        })
+        .then(response => response.json()) // 解析 JSON
         .then(result => {
-            // 显示计算结果
-            const resultsDiv = document.querySelector('#result_for_homepage_input');
-            resultsDiv.innerHTML = `
-                <p class="result_of_data_input">Mean: ${result.sorted_data.map(num => num).join(', ')}</p>
-                <p class="result_of_data_input">Mean: ${result.mean}</p>
-                <p class="result_of_data_input">Q1: ${result.q1}</p>
-                <p class="result_of_data_input">Q3: ${result.q3}</p>
-                <p class="result_of_data_input">IQR: ${result.iqr}</p>
-                <p class="result_of_data_input">Standard Deviation: ${result.standard_deviation}</p>
-                <p class="result_of_data_input">Outliers: ${result.outliers.join(', ')}</p>
-                ${extral_percent ? `<p class="result_of_data_input">Outliers: ${result.percent}</p>` : ''}
-            `;
+        // 检查是否包含 'outliers' 键和 'percent' 键
+        const hasOutliers = result.hasOwnProperty('outliers');
+        const hasPercent = result.hasOwnProperty('percent');
 
-        })
+        // 显示计算结果
+        const resultsDiv = document.querySelector('#result_for_homepage_input');
+
+        // 旧数据部分
+        let content = `
+            <p class="result_of_data_input">Data set: ${result.sorted_data.map(num => num).join(', ')}</p>
+            <p class="result_of_data_input">Mean: ${result.mean}</p>
+            <p class="result_of_data_input">Q1: ${result.q1}</p>
+            <p class="result_of_data_input">Q3: ${result.q3}</p>
+            <p class="result_of_data_input">IQR: ${result.iqr}</p>
+            <p class="result_of_data_input">Standard Deviation: ${result.standard_deviation}</p>
+        `;
+
+        // 如果有百分位数，则添加相关信息
+        if (hasPercent) {
+            content += `
+                <p class="result_of_data_input">Percent: ${result.percent}</p>
+            `;
+        }
+
+        // 如果有异常值，则添加相关信息
+        if (hasOutliers) {
+            content += `
+                <p class="result_of_data_input">Outliers: ${result.outliers.join(', ')}</p>
+                <p class="result_of_data_input">Dataset without outliers: ${result.dataset_without_outliers.join(', ')}</p>
+                <p class="result_of_data_input">New Mean: ${result.new_mean}</p>
+                <p class="result_of_data_input">New Q1: ${result.new_q1}</p>
+                <p class="result_of_data_input">New Q3: ${result.new_q3}</p>
+                <p class="result_of_data_input">New IQR: ${result.new_iqr}</p>
+                <p class="result_of_data_input">New Standard Deviation: ${result.new_standard_deviation}</p>
+            `;
+        }
+
+
+        // 将内容添加到页面
+        resultsDiv.innerHTML = content;
+    })
         .catch(error => {
             console.error('Error:', error); // 记录错误信息
             alert('An error occurred while processing your request.'); // 提示用户错误信息
