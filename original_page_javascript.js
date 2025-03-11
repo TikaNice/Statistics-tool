@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         
         // 向服务器发送请求
-        fetch(`http://localhost:8000/${path}`, {
+        fetch(`/api/${path}`, {
             method: 'POST', // 使用 POST 方法
             headers: {
                 'Content-Type': 'application/json', // 指定内容类型为 JSON
