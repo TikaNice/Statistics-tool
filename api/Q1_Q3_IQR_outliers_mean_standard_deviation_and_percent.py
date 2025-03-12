@@ -1,24 +1,24 @@
-from http.server import BaseHTTPRequestHandler
-from http import HTTPStatus
 import json
 import numpy as np
+import os
 from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
 
-class handler(BaseHTTPRequestHandler):
-    def do_OPTIONS(self):
-        # 处理 CORS 预检请求
-        self.send_response(HTTPStatus.OK)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.end_headers()
+def handler(request):
+    # 处理 CORS 预检请求
+    if request.method == "OPTIONS":
+        return ("", 204, {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type"
+        })
 
-    def do_POST(self):
-        # 读取请求体
-        content_length = int(self.headers.get("Content-Length", 0))
-        post_body = self.rfile.read(content_length)
+    # 处理 POST 请求
+    if request.method == "POST":
         try:
-            data = json.loads(post_body)
+            data = request.json
+            if not data or "data" not in data:
+                return (json.dumps({"error": "Missing 'data' field"}), 400, {"Content-Type": "application/json"})
+
             # 解析数据
             data_list = list(map(float, data["data"].split(",")))
             result = Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
@@ -39,27 +39,21 @@ class handler(BaseHTTPRequestHandler):
             except ValueError:
                 result["percent"] = "Invalid value for percent."
 
-            response_body = json.dumps(result).encode("utf-8")
-            self.send_response(HTTPStatus.OK)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Content-Length", str(len(response_body)))
-            self.end_headers()
-            self.wfile.write(response_body)
-        except Exception as e:
-            error_response = json.dumps({"error": str(e)}).encode("utf-8")
-            self.send_response(HTTPStatus.BAD_REQUEST)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Content-Length", str(len(error_response)))
-            self.end_headers()
-            self.wfile.write(error_response)
+            # 返回成功响应
+            return (json.dumps(result), 200, {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            })
 
-    def do_GET(self):
-        error_response = json.dumps({"error": "Method not allowed"}).encode("utf-8")
-        self.send_response(HTTPStatus.METHOD_NOT_ALLOWED)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Content-Length", str(len(error_response)))
-        self.end_headers()
-        self.wfile.write(error_response)
+        except Exception as e:
+            # 处理错误
+            return (json.dumps({"error": str(e)}), 400, {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            })
+
+    # 如果是其他请求方法
+    return (json.dumps({"error": "Method not allowed"}), 405, {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+    })
