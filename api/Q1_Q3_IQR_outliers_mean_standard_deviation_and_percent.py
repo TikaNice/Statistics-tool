@@ -1,6 +1,5 @@
 import json
 import numpy as np
-from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
 
 def handler(request):
     # CORS 预检请求
