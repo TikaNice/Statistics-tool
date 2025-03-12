@@ -2,8 +2,9 @@ from http.server import BaseHTTPRequestHandler
 from http import HTTPStatus
 import json
 import numpy as np
+from function_base import 
 
-def Q1_Q3_IQR_outliers_mean_and_standard_devisition(dataset):
+def Q1_Q3_IQR_outliers_mean_and_standard_deviation(dataset):
     #preprocess
     sorted_dataset = sorted(dataset)
     #transfer data to numpy data
@@ -71,7 +72,7 @@ class handler(BaseHTTPRequestHandler):
         try:
             data = json.loads(post_body)
             data_list = list(map(float, data["data"].split(",")))
-            result = Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
+            result = Q1_Q3_IQR_outliers_mean_and_standard_deviation(data_list)
 
 
             response_body = json.dumps(result).encode("utf-8")
