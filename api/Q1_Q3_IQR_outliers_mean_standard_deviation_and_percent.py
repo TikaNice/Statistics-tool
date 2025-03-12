@@ -1,3 +1,5 @@
+from http.server import BaseHTTPRequestHandler
+from http import HTTPStatus
 import json
 import numpy as np
 
@@ -119,3 +121,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(error_body)))
         self.end_headers()
         self.wfile.write(error_body)
+handler = Handler
