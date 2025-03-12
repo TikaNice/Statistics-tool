@@ -74,21 +74,6 @@ class handler(BaseHTTPRequestHandler):
             data_list = list(map(float, data["data"].split(",")))
             result = Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
 
-            # 如果有百分比逻辑的处理也在这里执行
-            requir_percent = data.get("percent", "0")
-            try:
-                if requir_percent.endswith('%'):
-                    requir_num = float(requir_percent[:-1])
-                else:
-                    requir_num = float(requir_percent) * 100
-
-                if 0 <= requir_num <= 100:
-                    percent = np.percentile(data_list, requir_num)
-                    result["percent"] = percent
-                else:
-                    result["percent"] = "Value out of range (0-100)."
-            except ValueError:
-                result["percent"] = "Invalid value for percent."
 
             response_body = json.dumps(result).encode("utf-8")
             self.send_response(HTTPStatus.OK)
