@@ -4,6 +4,16 @@ import json
 import numpy as np
 from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
 
+import os
+import sys
+
+# 打印当前工作目录
+print("Current Working Directory:", os.getcwd())
+
+# 打印当前目录下的所有文件
+print("Files in current directory:", os.listdir("."))
+
+
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         # 处理 CORS 预检请求
