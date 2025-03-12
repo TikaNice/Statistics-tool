@@ -32,8 +32,8 @@ def handler(request):
         except Exception as e:
             return Response(
                 json.dumps({"error": str(e)}),
-                status_code=HTTPStatus.BAD_REQUEST,
-                headers={"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
+                status_code=500,
+                headers={"Content-Type": "application/json"}
             )
 
     return Response(
@@ -41,3 +41,4 @@ def handler(request):
         status_code=HTTPStatus.METHOD_NOT_ALLOWED,
         headers={"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
     )
+
