@@ -1,6 +1,8 @@
+from http.server import BaseHTTPRequestHandler
+from http import HTTPStatus
 import json
 import numpy as np
-import os
+from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
 
 def Q1_Q3_IQR_outliers_mean_and_standard_devisition(dataset):
     #preprocess
@@ -53,31 +55,26 @@ def Q1_Q3_IQR_outliers_mean_and_standard_devisition(dataset):
         'new_q3': new_q3,
         'new_iqr': new_iqr
     }
-    
-def handler(request):
-    # 检查当前路径
-    print("Current Working Directory:", os.getcwd())
-    print("Files in current directory:", os.listdir())
 
-    # 允许 CORS 预检请求
-    if request.method == "OPTIONS":
-        return ("", 204, {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type"
-        })
+class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        # 处理 CORS 预检请求
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
-    # 处理 POST 请求
-    if request.method == "POST":
+    def do_POST(self):
+        # 读取请求体数据
+        content_length = int(self.headers.get("Content-Length", 0))
+        post_body = self.rfile.read(content_length)
         try:
-            data = request.json
-            if not data or "data" not in data:
-                return (json.dumps({"error": "Missing 'data' field"}), 400, {"Content-Type": "application/json"})
-
+            data = json.loads(post_body)
             data_list = list(map(float, data["data"].split(",")))
             result = Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
 
-            # 处理百分比逻辑
+            # 如果有百分比逻辑的处理也在这里执行
             requir_percent = data.get("percent", "0")
             try:
                 if requir_percent.endswith('%'):
@@ -93,19 +90,28 @@ def handler(request):
             except ValueError:
                 result["percent"] = "Invalid value for percent."
 
-            return (json.dumps(result), 200, {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            })
-
+            response_body = json.dumps(result).encode("utf-8")
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Content-Length", str(len(response_body)))
+            self.end_headers()
+            self.wfile.write(response_body)
         except Exception as e:
-            return (json.dumps({"error": str(e)}), 400, {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            })
+            error_body = json.dumps({"error": str(e)}).encode("utf-8")
+            self.send_response(HTTPStatus.BAD_REQUEST)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Content-Length", str(len(error_body)))
+            self.end_headers()
+            self.wfile.write(error_body)
 
-    # 其他请求方法不支持
-    return (json.dumps({"error": "Method not allowed"}), 405, {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-    })
+    def do_GET(self):
+        # 返回不允许 GET 请求的错误信息
+        error_body = json.dumps({"error": "Method not allowed"}).encode("utf-8")
+        self.send_response(HTTPStatus.METHOD_NOT_ALLOWED)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Content-Length", str(len(error_body)))
+        self.end_headers()
+        self.wfile.write(error_body)
