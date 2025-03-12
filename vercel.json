@@ -2,11 +2,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1.py"  // 将 /api/* 请求路由到对应的 Python 文件
+      "dest": "/api/$1.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/$1"  // 前端文件托管在 frontend 目录
+      "dest": "/frontend/$1"
     }
   ]
 }
