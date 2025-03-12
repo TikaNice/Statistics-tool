@@ -1,10 +1,9 @@
 import json
 import numpy as np
-import os
 from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
 
 def handler(request):
-    # 处理 CORS 预检请求
+    # CORS 预检请求
     if request.method == "OPTIONS":
         return ("", 204, {
             "Access-Control-Allow-Origin": "*",
