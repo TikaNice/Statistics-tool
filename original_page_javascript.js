@@ -94,11 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let extral_percent=false;
         let body_file;
         if (percent===""){
-            path = 'Q1_Q3_IQR_outliers_mean_and_standard_devisition';
+            path = 'Q1_Q3_IQR_outliers_mean_and_standard_deviation';
             body_file={data:data};
         }else {
             extral_percent=true;
-            path = 'Q1_Q3_IQR_outliers_mean_standard_devisition_and_percent';
+            path = 'Q1_Q3_IQR_outliers_mean_standard_deviation_and_percent';
             body_file={ 
                 data:data,
                 percent:percent
