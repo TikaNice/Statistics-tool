@@ -2,13 +2,7 @@ from http import HTTPStatus
 import json
 import numpy as np
 from vercel import Response
-
-def Q1_Q3_IQR_outliers_mean_and_standard_devisition(dataset):
-    # 你的原有计算逻辑（保持代码不变）
-    sorted_dataset = sorted(dataset)
-    dataset = np.array(dataset)
-    # ...（省略中间代码，保持原样）...
-    return result
+from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
 
 def handler(request):
     # 处理 CORS 预检请求
