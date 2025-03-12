@@ -2,7 +2,6 @@ from http.server import BaseHTTPRequestHandler
 from http import HTTPStatus
 import json
 import numpy as np
-from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
 
 def Q1_Q3_IQR_outliers_mean_and_standard_devisition(dataset):
     #preprocess
