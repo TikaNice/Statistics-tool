@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1.py"  // 将 /api/* 请求路由到对应的 Python 文件
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"  // 前端文件托管在 frontend 目录
+    }
+  ]
+}
