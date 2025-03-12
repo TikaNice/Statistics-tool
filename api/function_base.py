@@ -1,6 +1,6 @@
 import numpy as np
 
-def Q1_Q3_IQR_outliers_mean_and_standard_devisition(self,dataset):
+def Q1_Q3_IQR_outliers_mean_and_standard_devisition(dataset):
     #preprocess
     sorted_dataset = sorted(dataset)
     #transfer data to numpy data
