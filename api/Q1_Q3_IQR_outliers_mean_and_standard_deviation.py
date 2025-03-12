@@ -1,9 +1,3 @@
-from http.server import BaseHTTPRequestHandler
-from http import HTTPStatus
-import json
-import numpy as np
-from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
-
 import os
 import sys
 
@@ -12,6 +6,15 @@ print("Current Working Directory:", os.getcwd())
 
 # 打印当前目录下的所有文件
 print("Files in current directory:", os.listdir("."))
+
+
+from http.server import BaseHTTPRequestHandler
+from http import HTTPStatus
+import json
+import numpy as np
+from function_base import Q1_Q3_IQR_outliers_mean_and_standard_devisition
+
+
 
 
 class handler(BaseHTTPRequestHandler):
