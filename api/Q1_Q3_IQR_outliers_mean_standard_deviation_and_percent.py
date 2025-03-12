@@ -71,7 +71,7 @@ def handler(request):
 
             # 解析数据
             data_list = list(map(float, data["data"].split(",")))
-            result = Q1_Q3_IQR_outliers_mean_and_standard_devisition(data_list)
+            result = Q1_Q3_IQR_outliers_mean_and_standard_deviation(data_list)
 
             # 处理百分比逻辑
             requir_percent = data.get("percent", "0")
