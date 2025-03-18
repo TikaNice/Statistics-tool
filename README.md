@@ -1,8 +1,6 @@
-This is a websidee for counting Q1, Q3, IQR mean, standard devisition and outlier of data user input. 
-By input the percent, user can get the percentage of dataset they input.
-Use python as back service, javascript as APL
-So if you want to run this webise user download file and run the python file first. 
-Then user can open the original.html file and input dataset and tapy button to get Q1,IQR, Q3, mean, standard devisition and outlier.
-You can also type other data and type button to get new Q1, Q3, mean, standard devisition and outlier.
-Here is am example of website
-<img width="720" alt="show" src="https://github.com/user-attachments/assets/e5dfb454-d9be-478e-950e-7a5517d7d0b1">
+This website exists as a statistical tool, and its goal is to meet the needs of statistical analysis and data visualization of small samples.
+The functions currently implemented are:
+1: View the general information and distribution of the data set: input the data set, output the sorted data set, Q1, Q3, IQR, outlier, mean and standard devisition.
+2: View the percentage of the data set: input the data set, percentage. Output the percentage number of this data set.
+
+The website is already posted on Vercel. Feel free to try [here](https://statistics-tool.vercel.app/)
